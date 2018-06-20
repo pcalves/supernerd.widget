@@ -111,18 +111,6 @@ render: ( ) ->
 </div>-->
 
 <div class="tray" id="play-tray">
-  <div class="widg" id="play">
-    <div class="icon-container" id="play-icon-container">
-      <i class="fas fa-play" id="play-button"></i>
-    </div>
-  </div>
-
-  <div class="widg" id="next">
-    <div class="icon-container" id="next-icon-container">
-      <i class="fas fa-step-forward" id="next-button"></i>
-    </div>
-  </div>
-
   <div class="widg" id="playing">
     <span class="output nohidden" id='play-output'></span>
   </div>
@@ -200,3 +188,4 @@ afterRender: (domEl) ->
   $(domEl).on 'click', '#next', => @handleNext(domEl)
 
   $(domEl).on 'click', ".tray-button", (e) => $(domEl).find(".tray").toggleClass('hidden')
+

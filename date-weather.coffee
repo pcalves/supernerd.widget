@@ -1,4 +1,5 @@
-apiKey: "[API KEY]"
+apiKey: "d959452d7b7d505c92f8957d3742ebc9"
+location: "38.71667,-9.13333"
 
 # [API KEY] : Get it for free at forecast.io. You'll need a (free) developer account.
 #             IT LOOKS LIKE THIS: 2cce4b1c672a119283665a74e987fcde (this one's fake)
@@ -10,15 +11,15 @@ apiKey: "[API KEY]"
 
 commands =
   date  : "date +\"%a %d %b\""
-  weather : "sh ./supernerd.widget/scripts/getweather.sh '2cce4b1c672a629683665a70e987fcde' '45.4391,8.8855'"
+  weather : "sh ./supernerd.widget/scripts/getweather.sh 'd959452d7b7d505c92f8957d3742ebc9' '38.71667,-9.13333'"
 
 iconMapping:
   "rain"                :"fas fa-tint"
   "snow"                :"fas fa-snowflake"
   "fog"                 :"fas fa-braille"
-  "cloudy"              :"fas fa-sun"
+  "cloudy"              :"fas fa-cloud"
   "wind"                :"fas fa-align-left"
-  "clear-day"           :"fas fa-cloud"
+  "clear-day"           :"fas fa-sun"
   "mostly-clear-day"    :"fas fa-adjust"
   "partly-cloudy-day"   :"fas fa-cloud"
   "clear-night"         :"fas fa-star"
@@ -128,10 +129,3 @@ afterRender: (domEl) ->
     coords     = e.position.coords
     [lat, lon] = [coords.latitude, coords.longitude]
     @commands.weather = @makeCommand(@apiKey, "#{lat},#{lon}")
-
-afterRender: (domEl) ->
-  $(domEl).on 'mouseover', ".widg", (e) => $(domEl).find( $($(e.target))).addClass('open')
-
-  $(domEl).on 'mouseout', ".widg", (e) => $(domEl).find( $($(e.target))).removeClass('open')
-
-  $(domEl).on 'click', ".widg", (e) => $(domEl).find( $($(e.target))).toggleClass('pinned')

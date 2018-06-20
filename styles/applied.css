@@ -3,22 +3,48 @@
 ––––––––––––––––––– */
 
 :root {
-
-  --global_margin: 8px;
-  --left-margin: 512px;
-  --right-margin: 512px;
-  --line-size: 42px;
+  --global_margin: 0px;
+  --left-margin: 0px;
+  --right-margin: 0px;
+  --line-size: 20px;
 }
-
 
 /* ––––––––––––––––
 ––––––––––––––––––– GENERAL
 ––––––––––––––––––– */
 
-#supernerd-widget-system-monitor-coffee {
-  bottom:var(--global_margin);
-  left:33%;
-  right:33%;
-  display:flex;
-  justify-content: center;
+.bar-container {
+  box-shadow: 0px 1px 5px 0px rgba(0,0,0,0.6);
+  opacity: 1;
+}
+
+.widg {
+  font-family:"Hack";
+  font-size:12px;
+  background-color: rgba(0,0,0,0);
+  opacity: 1;
+}
+
+.opt {
+  background-color: var(--background);
+}
+
+/* ––––––––––––––––
+––––––––––––––––––– BEHAVIOUR (pinned, open, alt)
+––––––––––––––––––– */
+
+.pinned .icon-container {
+  color:var(--background);
+  background-color: var(--foreground);
+}
+.pinned {
+  opacity: 1;
+}
+
+.textonly {
+  display: inline;
+}
+
+.output {
+  display: inline !important;
 }

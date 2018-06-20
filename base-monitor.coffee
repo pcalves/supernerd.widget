@@ -29,16 +29,8 @@ render: ( ) ->
     <div class="icon-container" id='volume-icon-container'>
       <i id="volume-icon"></i>
       <span class="alt-text">VOL</span>
+      <span class="output" />
     </div>
-
-
-    <!-- <span class='output'>
-      <div class="bar-output toggleable" id="volume-bar-output">
-        <div class="bar-output" id="volume-bar-color-output"></div>
-      </div>
-    </span> -->
-
-    <span class="output" id='volume-output'></span>
   </div>
 
   <div class="widg toggleable" id="wifi">
@@ -233,16 +225,6 @@ handleWifi: (domEl, wifi ) ->
 # ─── ANIMATION  ─────────────────────────────────────────────────────────
 #
 afterRender: (domEl) ->
-  $(domEl).on 'mouseover', ".widg", (e) => $(domEl).find( $($(e.target))).addClass('open')
-
-  $(domEl).on 'mouseout', ".widg", (e) => $(domEl).find( $($(e.target))).removeClass('open')
-
-  $(domEl).on 'click', ".widg", (e) => $(domEl).find("##{$($(e.target)).attr('id')}-tray").toggleClass('hidden') && if not $(domEl).find( $($(e.target))).hasClass('tray-button') then $(domEl).find( $($(e.target))).toggleClass('pinned')
-
-  $(domEl).on 'mouseover', ".opt", (e) => $(domEl).find($($(e.target))).addClass('pinned')
-
-  $(domEl).on 'mouseout', ".opt", (e) => $(domEl).find($($(e.target))).removeClass('pinned')
-
   $(domEl).on 'click', ".theme-opt", (e) => @run "./supernerd.widget/scripts/selectstyle #{ $(domEl).find($($(e.target))).attr('id') }"
 
   # $(domEl).on 'click', ".mode-opt", (e) => $(domEl).find("##{$($(e.target)).attr('id')}").toggleClass('toggle-close')

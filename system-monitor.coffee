@@ -17,7 +17,7 @@ refreshFrequency: '1s'
 
 render: ( ) ->
   """
-<div class="tray hidden" id="time-tray">
+<div class="tray" id="time-tray">
 
   <div class="widg red" id="upl">
   <div class="icon-container" id='upl-icon-container'>
@@ -53,12 +53,6 @@ render: ( ) ->
     </div>
       <span class="output" id="hdd-output"></span>
   </div>
-</div>
-
-<div class="widg green tray-button" id="sysmon">
-    <div class="icon-container" id='sysmon-icon-container'>
-      <i class="fa fa-power-off"></i>
-    </div>
 </div>
 
   """
@@ -117,15 +111,3 @@ handleSysmon: ( domEl, sysmon, monid ) ->
     div.find(monid).addClass('yellow')
   else
     div.find(monid).addClass('red')
-
-#
-# ─── UNIVERSAL CLICK AND ANIMATION HANDLING  ─────────────────────────────────────────────────────────
-#
-afterRender: (domEl) ->
-  $(domEl).on 'mouseover', ".widg", (e) => $(domEl).find( $($(e.target))).addClass('open')
-
-  $(domEl).on 'mouseout', ".widg", (e) => $(domEl).find( $($(e.target))).removeClass('open')
-
-  $(domEl).on 'click', ".widg", (e) => $(domEl).find( $($(e.target))).toggleClass('pinned')
-
-  $(domEl).on 'click', ".tray-button", (e) => $(domEl).find(".tray").toggleClass('hidden')

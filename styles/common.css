@@ -171,7 +171,7 @@ color:var(--color2);
 ––––––––––––––––––– SPECIAL BEHAVIOR (PER WIDGET)
 ––––––––––––––––––– */
 #playing {
-  max-width: 400px;
+  width: auto;
 }
 
 #time{

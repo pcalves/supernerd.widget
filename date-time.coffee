@@ -1,18 +1,15 @@
 commands =
-  date  : "date +\"%a %d %b\""
+  datetime  : "date +\"%a %d %b %Y %H:%M%:%S\""
 
-command: "echo " +
-         "$(#{ commands.date }):::"
+command: "echo $(#{ commands.datetime }):::"
 
-refreshFrequency: '30m'
+refreshFrequency: 1000
 
 render: ( ) ->
   """
-    <div class="container">
-          <div class="widg" id="date">
-            <span class="output nohidden" id="date-output"></span>
-          </div>
-    </div>
+<div class="widg" id="datetime">
+  <span class="output nohidden" id="datetime-output"></span>
+</div>
   """
 
 update: ( output, domEl ) ->
@@ -20,9 +17,9 @@ update: ( output, domEl ) ->
 
   values = []
 
-  values.date = output[ 0 ]
+  values.datetime = output[ 0 ]
 
-  controls = ['date']
+  controls = ['datetime']
   for control in controls
     outputId = "#"+control+"-output"
     currentValue = $("#{outputId}").value
@@ -30,3 +27,4 @@ update: ( output, domEl ) ->
 
     if updatedValue != currentValue
       $("#{ outputId }").text("#{ updatedValue }")
+

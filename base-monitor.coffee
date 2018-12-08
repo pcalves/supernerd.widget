@@ -1,103 +1,28 @@
 commands =
-  volume : "osascript -e 'output volume of (get volume settings)'"
-  ismuted : "osascript -e 'output muted of (get volume settings)'"
+  volume : "osascript -e 'get volume settings' | cut -f2 -d':' | cut -f1 -d',';"
   battery : "pmset -g batt | egrep '([0-9]+\%).*' -o --colour=auto | cut -f1 -d';'"
-  ischarging : "sh ./supernerd.widget/scripts/ischarging.sh"
-  wifi: "/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I | sed -e \"s/^ *SSID: //p\" -e d"
-  isconnected: "echo true"
-  focus : "/usr/local/bin/chunkc tiling::query --window name"
-  playing: "osascript -e 'tell application \"iTunes\" to if player state is playing then artist of current track & \" - \" & name of current track'"
-  time: "date +\"%H:%M\""
+  ismuted : "osascript -e 'output muted of (get volume settings)'"
 
 
 command: "echo " +
          "$(#{ commands.volume }):::" +
-         "$(#{ commands.ismuted }):::" +
          "$(#{ commands.battery }):::" +
-         "$(#{ commands.ischarging }):::" +
-         "$(#{ commands.wifi }):::" +
-         "$(#{ commands.isconnected }):::" +
-         "$(#{ commands.time }):::"
+         "$(#{ commands.ismuted }):::"
 
-refreshFrequency: '10s'
+refreshFrequency: '1s'
 
 render: ( ) ->
   """
 <div class="container">
-<div class="tray" id="tray">
-  <div class="widg toggleable" id="volume">
-    <div class="icon-container" id='volume-icon-container'>
-      <i id="volume-icon"></i>
-      <span class="alt-text">VOL</span>
-      <span class="output" />
-    </div>
-  </div>
-
-  <div class="widg toggleable" id="wifi">
-    <div class="icon-container" id='wifi-icon-container'>
-      <i class="fa fa-wifi"></i>
-      <span class="alt-text">WFI</span>
-    </div>
-    <span class="output" id='wifi-output'></span>
-  </div>
-
-  <div class="widg toggleable" id="battery">
-    <div class="icon-container" id='battery-icon-container'>
-    <i class="battery-icon">BAT</i>
-    <span class="alt-text">BAT</span>
-    </div>
-    <span class="output" id='battery-output'></span>
-  </div>
-</div>
-
-<div class="widg pinned red tray-button" id="time">
-  <span class="output pinned" id="time-output"></span>
-</div>
-</div>
-
-<div class="popup container hidden" id="time-tray">
-
-    <div class="widg theme-opt opt" id="mono">
-      <div class="icon-container">
-        Mono
-      </div>
+  <div class="tray" id="tray">
+    <div class="widg toggleable" id="volume">
+      vol
+      <span class="output nohidden" id='volume-output' />
     </div>
 
-  <div class="widg theme-opt opt" id="flat">
-    <div class="icon-container">
-      Flat
-    </div>
-  </div>
-
-  <div class="widg theme-opt opt" id="float">
-    <div class="icon-container">
-      Float
-    </div>
-  </div>
-
-  <div class="widg theme-opt opt" id="middle">
-    <div class="icon-container">
-      Middle
-    </div>
-  </div>
-</div>
-
-<div class="popup container hidden" id="time-tray">
-  <div class="widg mode-opt opt" id="volume">
-    <div class="icon-container">
-    Volume
-    </div>
-  </div>
-
-  <div class="widg mode-opt opt" id="wifi">
-    <div class="icon-container">
-    Wifi
-    </div>
-  </div>
-
-  <div class="widg mode-opt opt" id="battery">
-    <div class="icon-container">
-    Battery
+    <div class="widg toggleable" id="battery">
+      bat
+      <span class="output nohidden" id='battery-output' />
     </div>
   </div>
 </div>
@@ -108,17 +33,14 @@ update: ( output, domEl ) ->
   output = output.split( /:::/g )
 
   values = []
+  values.volume  = output[0]
+  values.battery = output[1]
 
-  values.volume   = output[ 0 ]
-  values.ismuted  = output[ 1 ]
-  values.battery = output[ 2 ]
-  values.ischarging  = output[ 3 ]
-  values.wifi = output[ 4 ]
-  values.isconnected = output[ 5 ]
-  values.time = output[ 6 ]
+  if (output[2] == 'true')
+    values.volume = 0
 
 
-  controls = ['battery','volume','wifi','time']
+  controls = ['volume', 'battery']
   for control in controls
     outputId = "#"+control+"-output"
     currentValue = $("#{outputId}").value
@@ -126,105 +48,3 @@ update: ( output, domEl ) ->
 
     if updatedValue != currentValue
       $("#{ outputId }").text("#{ updatedValue }")
-
-      if control is 'battery'
-         @handleBattery( domEl, Number( values["battery"].replace( /%/g, "" ) ), values["ischarging"] )
-      else if control is 'wifi' then @handleWifi( domEl, values["wifi"] )
-      else if control is  'volume' then @handleVolume( domEl, Number( values["volume"]), values["ismuted"] )
-      else if control is 'brightness' then @handleBrightness( domEl, values["brightness"] )
-
-#
-# ─── HANDLE BRIGHTNESS ─────────────────────────────────────────────────────────
-#
-handleBrightness: (domEl, brightness ) ->
-  brightness = Math.round(100*brightness) + 2
-  $("#brightness-output").text("#{brightness}")
-  $( "#brightness-bar-color-output" ).width( "#{brightness}%" )
-
-#
-# ─── HANDLE VOLUME ─────────────────────────────────────────────────────────
-#
-
-handleVolume: ( domEl, volume, ismuted ) ->
-  div = $( domEl )
-
-  volumeIcon = switch
-    when volume ==   0 then "fa-volume-off"
-    when volume <=  50 then "fa-volume-down"
-    when volume <= 100 then "fa-volume-up"
-
-  #
-  # div.find("#volume").removeClass('blue')
-  # div.find("#volume").removeClass('red')
-  #
-  # if ismuted != 'true'
-  #   div.find( "#volume-output").text("#{ volume }")
-  #   div.find('#volume').addClass('blue')
-  #   div.find('#volume-icon-container').addClass('blue')
-  # else
-  #   div.find( "#volume-output").text("Muted")
-  #   volumeIcon = "fa-volume-off"
-  #   div.find('#volume').addClass('red')
-  #   div.find('#volume-icon-container').addClass('red')
-
-  $("#volume-output").text("#{volume}")
-  $( "#volume-icon" ).html( "<i class=\"fa #{ volumeIcon }\"></i>" )
-  $( "#volume-bar-color-output" ).width( "#{volume}%" )
-
-
-#
-# ─── HANDLE BATTERY ─────────────────────────────────────────────────────────
-#
-
-handleBattery: ( domEl, percentage, ischarging ) ->
-  div = $( domEl )
-
-  batteryIcon = switch
-    when percentage <=  12 then "fa-battery-empty"
-    when percentage <=  25 then "fa-battery-quarter"
-    when percentage <=  50 then "fa-battery-half"
-    when percentage <=  75 then "fa-battery-three-quarters"
-    when percentage <= 100 then "fa-battery-full"
-
-
-  div.find("#battery").removeClass('green')
-  div.find("#battery").removeClass('yellow')
-  div.find("#battery").removeClass('red')
-
-  if percentage >= 35
-    div.find('#battery').addClass('green')
-    div.find('#battery-icon-container').addClass('green')
-  else if percentage >= 15
-    div.find('#battery').addClass('yellow')
-    div.find('#battery-icon-container').addClass('yellow')
-  else
-    div.find('#battery').addClass('red')
-    div.find('#battery-icon-container').addClass('red')
-
-  if ischarging == "true"
-    batteryIcon = "fas fa-bolt"
-  $( ".battery-icon" ).html( "<i class=\"fa #{ batteryIcon }\"></i>" )
-
-
-
-#
-# ─── HANDLE WIFI ─────────────────────────────────────────────────────────
-#
-
-handleWifi: (domEl, wifi ) ->
-  $( "#wifi-output").text("#{ wifi }")
-
-  if wifi == ''
-    wifiIcon = 'fas fa-exclamation-circle'
-  else
-    wifiIcon = 'fa fa-wifi'
-  $(domEl).find( ".wifi-icon" ).html( "<i class=\"fa #{ wifiIcon }\"></i>" )
-
-
-#
-# ─── ANIMATION  ─────────────────────────────────────────────────────────
-#
-afterRender: (domEl) ->
-  $(domEl).on 'click', ".theme-opt", (e) => @run "./supernerd.widget/scripts/selectstyle #{ $(domEl).find($($(e.target))).attr('id') }"
-
-  # $(domEl).on 'click', ".mode-opt", (e) => $(domEl).find("##{$($(e.target)).attr('id')}").toggleClass('toggle-close')

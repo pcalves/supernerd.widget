@@ -23,11 +23,6 @@
 ––––––––––––––––––– BEHAVIOUR (pinned, open, alt)
 ––––––––––––––––––– */
 
-.pinned {
-  color:var(--background);
-  background-color: var(--color3);
-}
-
 .textonly {
   display: inline;
 }

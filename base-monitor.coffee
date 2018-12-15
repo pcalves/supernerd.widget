@@ -1,6 +1,6 @@
 commands =
   volume : "osascript -e 'get volume settings' | cut -f2 -d':' | cut -f1 -d',';"
-  battery : "pmset -g batt | egrep '([0-9]+\%).*' -o --colour=auto | cut -f1 -d';'"
+  battery : "pmset -g batt | egrep '([0-9]+\%).*' -o --colour=auto | sed 's/%//' | cut -f1 -d';'"
   ismuted : "osascript -e 'output muted of (get volume settings)'"
 
 
@@ -41,10 +41,11 @@ update: ( output, domEl ) ->
 
 
   controls = ['volume', 'battery']
+
   for control in controls
     outputId = "#"+control+"-output"
     currentValue = $("#{outputId}").value
     updatedValue = values[control]
 
     if updatedValue != currentValue
-      $("#{ outputId }").text("#{ updatedValue }")
+      $("#{ outputId }").text("#{ updatedValue }%")

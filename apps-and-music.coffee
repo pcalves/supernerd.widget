@@ -1,27 +1,52 @@
+desktopMap = {
+  '1': '一',
+  '2': '二',
+  '3': '三',
+  '4': '四',
+  '5': '五',
+  '6': '六',
+  '7': '七',
+  '8': '八',
+  '9': '九',
+  '10': '十'
+}
+
 commands =
+  desktops: "echo $(/usr/local/bin/chunkc tiling:query -D 1)"
   activedesk: "echo $(/usr/local/bin/chunkc tiling::query -d id)"
   playing: "echo $(sh ./supernerd.widget/scripts/gettrack.sh)"
   isplaying: "echo $(sh ./supernerd.widget/scripts/ismpcplaying.sh)"
+  ispaused: "echo $(sh ./supernerd.widget/scripts/ismpcpaused.sh)"
+  progress: "echo $(sh ./supernerd.widget/scripts/gettrackprogress.sh)"
 
 command: "echo " +
+         "$(#{ commands.desktops }):::" +
          "$(#{ commands.activedesk }):::" +
-         "$(#{ commands.playing}):::" +
-         "$(#{ commands.isplaying}):::"
+         "$(#{ commands.playing }):::" +
+         "$(#{ commands.isplaying }):::" +
+         "$(#{ commands.ispaused }):::" +
+         "$(#{ commands.progress }):::"
 
-refreshFrequency: '2s'
+refreshFrequency: '100ms'
 
 render: ( ) ->
   """
 <div class="container">
 <div class="widg tray-button pinned" id="home">
   <div class="icon-container" id="home-icon-container">
-  <span id="active-desktop"></span>
+    <span class="icon" id="active-desktop">1</span>
+    <span class="icon" id="active-desktop">2</span>
+    <span class="icon" id="active-desktop">3</span>
+    <span class="icon" id="active-desktop">4</span>
+    <span class="icon" id="active-desktop">5</span>
+    <span class="icon" id="active-desktop">6</span>
   </div>
 </div>
 
 <div class="tray" id="play-tray">
   <div class="widg" id="playing">
-    <span class="output nohidden" id='play-output'></span>
+    <span class="output nohidden mr0" id='play-output'></span>
+    <span class="output nohidden" id='play-progress'></span>
   </div>
 </div>
 </div>
@@ -29,11 +54,38 @@ render: ( ) ->
 
 update: ( output, domEl ) ->
   output = output.split( /:::/g )
-  activedesk = output[0]
-  playing = output[1]
-  isplaying = output[2]
+  desktops = output[0].split(' ')
+  activedesk = output[1]
+  playing = output[2]
+  isplaying = output[3] == 'true'
+  ispaused = output[4] == 'true'
+  progress = output[5]
 
-  $(domEl).find('#play-output').text(playing)
+  playingInfo = playing.split(' - ')
+  playOutput = $(domEl).find("#play-output")
+  playProgress = $(domEl).find("#play-progress")
+  desktopContainer = $(domEl).find("#home-icon-container")
+  desktopIcons = $(domEl).find(".icon")
+  separator = '<span class="separator">•</span>';
 
-  if $("#active-desktop").text != activedesk
-    $("#active-desktop").text(activedesk)
+  playOutput.empty()
+  playProgress.empty()
+
+  if isplaying || ispaused
+    playOutput.append(
+      playingInfo[0] +
+      separator +
+      playingInfo[1]
+    );
+    playProgress.append(separator + progress)
+
+  if (ispaused)
+    playProgress.append(' (paused)')
+
+  if (desktopContainer.children().length != desktops.length)
+    desktopContainer.empty()
+    for index, num of desktops
+      desktopContainer.append("<span class='icon'>" + desktopMap[num] + "</span");
+
+  desktopIcons.removeClass('active')
+  desktopIcons.eq(activedesk - 1).addClass('active');

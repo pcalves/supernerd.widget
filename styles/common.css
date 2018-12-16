@@ -152,6 +152,13 @@
   width:auto;
 }
 
+/* ––––––––––––––– BOTTOM LEFT */
+#supernerd-widget-pomodoro-coffee {
+  bottom: var(--global_margin);
+  left: var(--left-margin);
+  display:inline;
+  white-space: nowrap;
+}
 
 /* ––––––––––––––– BOTTOM RIGHT */
 #supernerd-widget-system-monitor-coffee {
